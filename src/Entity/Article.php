@@ -2,13 +2,37 @@
 
 namespace App\Entity;
 
+
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+
+
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
+ * @UniqueEntity("ref", message="cette référence d'article est déjà utilisé")
+ * @ApiResource(
+ *  attributes={
+        "order"={"price":"asc"},
+ *     },
+ *  normalizationContext={"groups"={"articles_read"}},
+ * )
+ * @ApiFilter(
+ *      OrderFilter::class, properties={"label":"asc", "price":"asc"}
+ * )
+ * @ApiFilter(
+ *     SearchFilter::class, properties={"label":"partial", "price":"exact", "ref":"partial"}
+ * )
  */
 class Article
 {
@@ -21,27 +45,42 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read", "belongs_subresource"})
+     * @Assert\NotBlank(message="Le nom est obligatoire")
+     * @Assert\Type(type="string", message="le type doit être une chaine de caractére")
+     * @Assert\Length(min=3, max=50, minMessage="Le nom doit faire au moins 3 caractéres", maxMessage="le nom de l'article doit faire moins de 50 caractéres")
      */
     private $label;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read", "belongs_subresource"})
+     * @Assert\NotBlank(message="Le prix est obligatoire")
+     * @Assert\Type(type="numeric", message="le prix doit être numérique")
+     * @Assert\Positive(message="le prix doit être positif")
      */
     private $price;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read", "belongs_subresource"})
+     * @Assert\NotBlank(message="La référence est obligatoire")
+     * @Assert\Type(type="string", message="le type doit être une chaine de caractére")
+     * @Assert\Length(min=3, max=50, minMessage="La ref doit faire au moins 3 caractéres", maxMessage="la ref de l'article doit faire moins de 50 caractéres")
      */
     private $ref;
 
     /**
      * @ORM\OneToMany(targetEntity=Belong::class, mappedBy="article")
+     * @Groups({"articles_read"})
      */
     private $belongs;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="article")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"articles_read"})
+     * @Assert\NotBlank(message="l'utilisateur est obligatoire")
      */
     private $user;
 

@@ -2,11 +2,25 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\BelongRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=BelongRepository::class)
+ * @ApiResource(
+ *     subresourceOperations={
+            "api_stocks_belongs_get_subresource"={
+ *              "normalization_context"={"groups"={"belongs_subresource"}}
+ *          }
+ *     },
+ *      attributes={
+        "order"={"qty":"DESC"}
+ *      },
+ *     normalizationContext={"groups"={"belong_read"}}
+ * )
  */
 class Belong
 {
@@ -20,17 +34,26 @@ class Belong
     /**
      * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="belongs")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"belong_read", "stocks_read", "user_read", "belongs_subresource"})
+     * @Assert\NotBlank(message="l'article est obligatoire")
      */
     private $article;
 
     /**
      * @ORM\ManyToOne(targetEntity=Stock::class, inversedBy="belongs")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"articles_read", "belong_read"})
+     * @Assert\NotBlank(message="le stock est obligatoire")
+     *
      */
     private $stock;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"articles_read"})
+     * @Groups({"belong_read", "user_read", "belongs_subresource"})
+     * @Assert\NotBlank(message="la quantité est obligatoire")
+     * @Assert\PositiveOrZero(message="la quantité doit être au minimum de 0")
      */
     private $qty;
 
