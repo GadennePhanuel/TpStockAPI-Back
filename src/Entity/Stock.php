@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiSubresource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -21,9 +20,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ApiResource(
  *     attributes={
         "order"={"label":"ASC"}
- *     },
- *     subresourceOperations={
-            "belongs_get_subresource"={}
  *     },
  *     normalizationContext={
  *          "groups"={"stocks_read"}
@@ -57,7 +53,6 @@ class Stock
     /**
      * @ORM\OneToMany(targetEntity=Belong::class, mappedBy="stock")
      * @Groups({"stocks_read", "user_read"})
-     * @ApiSubresource()
      */
     private $belongs;
 

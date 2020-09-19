@@ -45,7 +45,7 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read", "belongs_subresource"})
+     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read"})
      * @Assert\NotBlank(message="Le nom est obligatoire")
      * @Assert\Type(type="string", message="le type doit être une chaine de caractére")
      * @Assert\Length(min=3, max=50, minMessage="Le nom doit faire au moins 3 caractéres", maxMessage="le nom de l'article doit faire moins de 50 caractéres")
@@ -54,7 +54,7 @@ class Article
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read", "belongs_subresource"})
+     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read"})
      * @Assert\NotBlank(message="Le prix est obligatoire")
      * @Assert\Type(type="numeric", message="le prix doit être numérique")
      * @Assert\Positive(message="le prix doit être positif")
@@ -63,7 +63,7 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read", "belongs_subresource"})
+     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read"})
      * @Assert\NotBlank(message="La référence est obligatoire")
      * @Assert\Type(type="string", message="le type doit être une chaine de caractére")
      * @Assert\Length(min=3, max=50, minMessage="La ref doit faire au moins 3 caractéres", maxMessage="la ref de l'article doit faire moins de 50 caractéres")

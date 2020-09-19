@@ -11,11 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=BelongRepository::class)
  * @ApiResource(
- *     subresourceOperations={
-            "api_stocks_belongs_get_subresource"={
- *              "normalization_context"={"groups"={"belongs_subresource"}}
- *          }
- *     },
  *      attributes={
         "order"={"qty":"DESC"}
  *      },
@@ -34,7 +29,7 @@ class Belong
     /**
      * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="belongs")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"belong_read", "stocks_read", "user_read", "belongs_subresource"})
+     * @Groups({"belong_read", "stocks_read", "user_read"})
      * @Assert\NotBlank(message="l'article est obligatoire")
      */
     private $article;
@@ -51,7 +46,7 @@ class Belong
     /**
      * @ORM\Column(type="integer")
      * @Groups({"articles_read"})
-     * @Groups({"belong_read", "user_read", "belongs_subresource"})
+     * @Groups({"belong_read", "user_read"})
      * @Assert\NotBlank(message="la quantité est obligatoire")
      * @Assert\PositiveOrZero(message="la quantité doit être au minimum de 0")
      */
