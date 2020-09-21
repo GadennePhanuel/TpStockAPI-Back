@@ -14,7 +14,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      attributes={
         "order"={"qty":"DESC"}
  *      },
- *     normalizationContext={"groups"={"belong_read"}}
+ *     normalizationContext={"groups"={"belong_read"}},
+ *     denormalizationContext={"disable_type_enforcement"=true}
  * )
  */
 class Belong
@@ -48,6 +49,7 @@ class Belong
      * @ORM\Column(type="integer")
      * @Groups({"articles_read"})
      * @Groups({"belong_read", "user_read"})
+     * @Assert\Type(type="numeric", message="la quantité doit être de type numérique !")
      * @Assert\NotBlank(message="la quantité est obligatoire")
      * @Assert\PositiveOrZero(message="la quantité doit être au minimum de 0")
      */
@@ -87,7 +89,7 @@ class Belong
         return $this->qty;
     }
 
-    public function setQty(int $qty): self
+    public function setQty($qty): self
     {
         $this->qty = $qty;
 

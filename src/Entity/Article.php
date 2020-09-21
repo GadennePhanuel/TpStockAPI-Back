@@ -26,6 +26,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
         "order"={"price":"asc"},
  *     },
  *  normalizationContext={"groups"={"articles_read"}},
+ *     denormalizationContext={"disable_type_enforcement"=true}
  * )
  * @ApiFilter(
  *      OrderFilter::class, properties={"label":"asc", "price":"asc"}
@@ -112,7 +113,7 @@ class Article
         return $this->price;
     }
 
-    public function setPrice(int $price): self
+    public function setPrice($price): self
     {
         $this->price = $price;
 
