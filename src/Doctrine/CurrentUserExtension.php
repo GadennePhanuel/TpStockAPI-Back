@@ -8,6 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use App\Entity\Article;
 use App\Entity\Belong;
 use App\Entity\Stock;
+use App\Entity\User;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Security;
@@ -42,7 +43,10 @@ class CurrentUserExtension implements QueryCollectionExtensionInterface, QueryIt
         //si on demande des article ou des stocks alors agir sur la requête pour qu'elle tienne compte de l'utilisateur actuellement connecté"
         if (($resourceClass === Article::class || $resourceClass === Stock::class || $resourceClass === Belong::class)
             &&
-            !$this->auth->isGranted('ROLE_ADMIN'))
+            !$this->auth->isGranted('ROLE_ADMIN')
+            &&
+            $user instanceof User
+            )
         {
             $rootAlias = $queryBuilder->getRootAliases()[0];
 

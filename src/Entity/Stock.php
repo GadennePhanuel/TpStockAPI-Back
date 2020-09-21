@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -23,7 +24,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     },
  *     normalizationContext={
  *          "groups"={"stocks_read"}
- *     }
+ *     },
+ *     itemOperations={"GET", "PUT", "DELETE", "notInStock"={
+ *          "method"="get",
+ *          "path"="/stocks/{id}/notBelongs",
+ *          "controller"="App\Controller\ArticlesWhitoutBelongsController",
+ *          "swagger_context"={
+ *               "summary"="recupére des articles",
+ *              "description"="récupére tous les articles n'appartenant pas au stocks en question"
+ *          }}}
  * )
  * @ApiFilter(
  *     SearchFilter::class, properties={"label":"partial"}
@@ -38,6 +47,7 @@ class Stock
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"articles_read", "belong_read", "stocks_read", "user_read"})
      */
     private $id;
 
@@ -53,6 +63,7 @@ class Stock
     /**
      * @ORM\OneToMany(targetEntity=Belong::class, mappedBy="stock")
      * @Groups({"stocks_read", "user_read"})
+     * @ApiSubresource()
      */
     private $belongs;
 
@@ -77,6 +88,24 @@ class Stock
     public function getTotalArticleCurrentStock(): int
     {
         return count($this->belongs->toArray());
+    }
+
+
+    /**
+     * Permet de retourner le montant total des articles du stock
+     * @Groups({"stocks_read"})
+     * @return float
+     */
+    public function getTotalAmountOfArticleInCurrentStock(): float
+    {
+        $totalAmount = 0;
+        $arrBelongs = $this->belongs->toArray();
+        foreach ($arrBelongs as $belong){
+            $belong->getQty();
+            $priceArticle = $belong->getArticle()->getPrice();
+            $totalAmount = $totalAmount + $priceArticle;
+        }
+        return $totalAmount;
     }
 
     public function getId(): ?int

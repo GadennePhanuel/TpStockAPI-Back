@@ -19,6 +19,34 @@ class ArticleRepository extends ServiceEntityRepository
         parent::__construct($registry, Article::class);
     }
 
+    /**
+     * @param $idStock
+     * @return Article[] Returns an array of Article objects
+     */
+    public function findAllArticleNotInCurrentStock($idStock, $idUser)
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT * 
+            FROM article
+            WHERE user_id = :userId AND !EXISTS (
+                SELECT article_id
+                FROM belong
+                WHERE stock_id = :stock_id AND article.id = belong.article_id
+                )   
+            ORDER BY article.price    
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([
+            'stock_id' => $idStock,
+            'userId' => $idUser
+        ]);
+
+        return $stmt->fetchAll();
+    }
+
     // /**
     //  * @return Article[] Returns an array of Article objects
     //  */

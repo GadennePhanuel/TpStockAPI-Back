@@ -23,6 +23,7 @@ class Belong
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"belong_read", "stocks_read", "user_read", "articles_read"})
      */
     private $id;
 
